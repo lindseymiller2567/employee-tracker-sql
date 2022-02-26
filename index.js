@@ -82,9 +82,17 @@ function updateEmployeePrompt(employeeArray) {
             choices: employeeArray
         },
         {
-            type: 'input',
+            type: 'list',
             name: 'role',
-            message: "What role do you want to assign the selected employee?"
+            message: "What role do you want to assign the selected employee?",
+            choices: [
+                { value: 1, name: "Sales Executive" },
+                { value: 2, name: "Sales Associate" },
+                { value: 3, name: "Finance Manager" },
+                { value: 4, name: "Accountant" },
+                { value: 5, name: "Legal Manager" },
+                { value: 6, name: "Lawyer" }
+            ]
         }
     ])
 }
@@ -278,27 +286,6 @@ function addEmployee() {
     })
 }
 
-// find all the roles and update 'id' to 'value' so that it can be called inside the prompt choices
-function findManager() {
-    const sql = `SELECT manager_id, first_name FROM employee`;
-    db.query(sql, (err, rows) => {
-        if (err) {
-            console.log(err);
-        }
-        // console.log(rows);
-        const managerArray = [];
-
-        for (let i = 0; i < rows.length; i++) {
-            let newRows = {
-                value: rows[i].manager_id,
-                name: rows[i].first_name
-            }
-            managerArray.push(newRows)
-        }
-        // console.log(managerArray)
-    })
-}
-
 function updateEmployeeRole() {
     const sql = `SELECT id, first_name, last_name FROM employee`;
     db.query(sql, (err, rows) => {
@@ -315,19 +302,19 @@ function updateEmployeeRole() {
             }
             employeeArray.push(newRows)
         }
-        // console.log(employeeArray)
+        console.log(employeeArray)
 
         updateEmployeePrompt(employeeArray)
             .then(answer => {
                 console.log(answer) // { employee: 1, role: 'Janitor' }
                 const sql = `UPDATE employee SET role_id = ? WHERE id = ? `;
-                const params = [2, answer.employee];
+                const params = [answer.role, answer.employee];
 
                 db.query(sql, params, (err, result) => {
                     if (err) {
                         console.log(err);
                     }
-                    console.log('Updated ' + params[1] + ' in the database.')
+                    console.log('Updated employee role in the database.')
                     mainPrompt();
                 })
             })
