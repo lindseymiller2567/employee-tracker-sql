@@ -59,33 +59,32 @@ function addEmployeePrompt(roleArray) {
             name: 'role',
             message: "What is the employee's role?",
             choices: roleArray
+        },
+        {
+            type: 'list',
+            name: 'manager',
+            message: "Who is the employee's manager?",
+            choices: [
+                { value: 1, name: "Billie Eilish" },
+                { value: 3, name: "Jennifer Lopez" },
+                { value: 5, name: "Ariana Grande" }
+            ]
         }
-        // {
-        //     type: 'list',
-        //     name: 'manager',
-        //     message: "Who is the employee's manager?",
-        //     choices: [
-        //         "Billie Eilish",
-        //         "Jennifer Lopez",
-        //         "Ariana Grande"
-        //     ]
-        // }
     ])
 }
 
-function updateEmployeePrompt() {
+function updateEmployeePrompt(employeeArray) {
     return inquirer.prompt([
         {
-            type: 'input',
-            name: 'addDepartment',
-            message: "Which employee's role do you want to update?",
-            choices: "something"
+            type: 'list',
+            name: 'employee',
+            message: "Which employee do you want to update?",
+            choices: employeeArray
         },
         {
             type: 'input',
-            name: 'addDepartment',
-            message: "Which role do you want to assign the selected employee?",
-            choices: "something"
+            name: 'role',
+            message: "What role do you want to assign the selected employee?"
         }
     ])
 }
@@ -132,7 +131,7 @@ function mainPrompt() {
                     addEmployee()
                     break;
                 case 'Update an employee role':
-                    // to come
+                    updateEmployeeRole()
                     break;
                 case 'Quit':
                     process.exit() // exit out of Node
@@ -223,7 +222,7 @@ function addRole() {
             departmentArray.push(newRows)
         }
 
-        // console.log(departmentArray)
+        console.log(departmentArray)
 
         addRolePrompt(departmentArray)
             .then(answer => {
@@ -262,12 +261,10 @@ function addEmployee() {
         }
         // console.log(roleArray)
 
-        // findManager()
-
         addEmployeePrompt(roleArray)
             .then(answer => {
-                const sql = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)`;
-                const params = [answer.first, answer.last, answer.role];
+                const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
+                const params = [answer.first, answer.last, answer.role, answer.manager];
 
                 db.query(sql, params, (err, result) => {
                     if (err) {
@@ -314,12 +311,26 @@ function updateEmployeeRole() {
         for (let i = 0; i < rows.length; i++) {
             let newRows = {
                 value: rows[i].id,
-                name: rows[i].first_name
+                name: rows[i].first_name + " " + rows[i].last_name
             }
             employeeArray.push(newRows)
         }
+        // console.log(employeeArray)
 
-        console.log(employeeArray)
+        updateEmployeePrompt(employeeArray)
+            .then(answer => {
+                console.log(answer) // { employee: 1, role: 'Janitor' }
+                const sql = `UPDATE employee SET role_id = ? WHERE id = ? `;
+                const params = [2, answer.employee];
+
+                db.query(sql, params, (err, result) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log('Updated ' + params[1] + ' in the database.')
+                    mainPrompt();
+                })
+            })
 
     })
 }
