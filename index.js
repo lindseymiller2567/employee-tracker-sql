@@ -73,6 +73,7 @@ function addEmployeePrompt(roleArray) {
     ])
 }
 
+// update employee role prompt
 function updateEmployeePrompt(employeeArray) {
     return inquirer.prompt([
         {
@@ -286,6 +287,7 @@ function addEmployee() {
     })
 }
 
+// Update an employee role 
 function updateEmployeeRole() {
     const sql = `SELECT id, first_name, last_name FROM employee`;
     db.query(sql, (err, rows) => {
