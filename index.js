@@ -67,7 +67,8 @@ function addEmployeePrompt(roleArray) {
             choices: [
                 { value: 1, name: "Billie Eilish" },
                 { value: 3, name: "Jennifer Lopez" },
-                { value: 5, name: "Ariana Grande" }
+                { value: 5, name: "Ariana Grande" },
+                { value: null , name: "TBD" }
             ]
         }
     ])
@@ -231,7 +232,7 @@ function addRole() {
             departmentArray.push(newRows)
         }
 
-        console.log(departmentArray)
+        // console.log(departmentArray)
 
         addRolePrompt(departmentArray)
             .then(answer => {
@@ -304,11 +305,11 @@ function updateEmployeeRole() {
             }
             employeeArray.push(newRows)
         }
-        console.log(employeeArray)
+        // console.log(employeeArray)
 
         updateEmployeePrompt(employeeArray)
             .then(answer => {
-                console.log(answer) // { employee: 1, role: 'Janitor' }
+                // console.log(answer) // 
                 const sql = `UPDATE employee SET role_id = ? WHERE id = ? `;
                 const params = [answer.role, answer.employee];
 
